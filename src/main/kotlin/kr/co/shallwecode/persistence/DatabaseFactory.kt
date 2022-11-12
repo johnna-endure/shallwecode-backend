@@ -1,7 +1,7 @@
 package kr.co.shallwecode.persistence
 
 import kotlinx.coroutines.Dispatchers
-import kr.co.shallwecode.persistence.tables.User
+import kr.co.shallwecode.persistence.tables.UserTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -16,7 +16,7 @@ object DatabaseFactory {
 
         // ddl auto create (개발용)
         transaction(database) {
-            SchemaUtils.create(User)
+            SchemaUtils.create(UserTable)
         }
     }
 
