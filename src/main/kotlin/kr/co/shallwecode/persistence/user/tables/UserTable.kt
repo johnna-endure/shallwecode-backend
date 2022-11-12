@@ -1,7 +1,6 @@
-package kr.co.shallwecode.persistence.tables
-import org.h2.engine.User
+package kr.co.shallwecode.persistence.user.tables
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.Table
 
 object UserTable : Table(){
@@ -18,16 +17,17 @@ object UserTable : Table(){
 
 fun UserTable.toModel(row: ResultRow) : UserModel {
     return UserModel(
-        id = row[UserTable.id],
-        email = row[UserTable.email],
-        name = row[UserTable.name],
-        loginId = row[UserTable.loginId],
-        blogUrl = row[UserTable.blogUrl],
-        githubUrl = row[UserTable.githubUrl]
+        id = row[id],
+        email = row[email],
+        name = row[name],
+        loginId = row[loginId],
+        blogUrl = row[blogUrl],
+        githubUrl = row[githubUrl]
     )
 }
 
 
+@Serializable
 data class UserModel(
     val id: Int,
     val email: String,
