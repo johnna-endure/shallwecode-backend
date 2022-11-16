@@ -1,9 +1,10 @@
-package kr.co.shallwecode.persistence.user.tables
+package kr.co.shallwecode.module.user.persistence.repository
+
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 
-object UserTable : Table(){
+object UserTable : Table() {
     val id = integer("id").autoIncrement()
     val email = varchar("email", 100)
     val name = varchar("name", 100)
@@ -15,7 +16,7 @@ object UserTable : Table(){
     override val primaryKey = PrimaryKey(id)
 }
 
-fun UserTable.toModel(row: ResultRow) : UserModel {
+fun UserTable.toModel(row: ResultRow): UserModel {
     return UserModel(
         id = row[id],
         email = row[email],

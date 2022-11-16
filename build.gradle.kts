@@ -48,5 +48,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
-    implementation("org.kodein.di:kodein-di:7.16.0")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.16.0")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-controller-jvm:7.16.0")
 }

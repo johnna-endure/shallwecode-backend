@@ -1,15 +1,15 @@
-package kr.co.shallwecode.persistence
+package kr.co.shallwecode.module.database
 
 import kotlinx.coroutines.Dispatchers
-import kr.co.shallwecode.persistence.user.tables.UserTable
+import kr.co.shallwecode.module.user.persistence.repository.UserTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 
 // TODO 추상화 필요 개발용, 운영용
-object DatabaseFactory {
-    fun init() {
+class Database {
+    init {
         val driverClassName = "org.h2.Driver"
         val jdbcURL = "jdbc:h2:file:~/shallwecode/db"
         val database = Database.connect(jdbcURL, driverClassName)
