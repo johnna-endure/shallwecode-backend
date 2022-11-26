@@ -1,28 +1,33 @@
 package kr.co.shallwecode.module.user.persistence.repository
 
 import kr.co.shallwecode.module.database.Database
-import kr.co.shallwecode.module.user.persistence.repository.UserModel
-import kr.co.shallwecode.module.user.persistence.repository.UserTable
-import kr.co.shallwecode.module.user.persistence.repository.toModel
-import kr.co.shallwecode.routes.user.UserCreateRequest
+import kr.co.shallwecode.module.user.controller.UserCreateRequest
+import kr.co.shallwecode.module.user.persistence.table.UserModel
+import kr.co.shallwecode.module.user.persistence.table.UserTable
+import kr.co.shallwecode.module.user.persistence.table.UserTable.blogUrl
+import kr.co.shallwecode.module.user.persistence.table.UserTable.email
+import kr.co.shallwecode.module.user.persistence.table.UserTable.githubUrl
+import kr.co.shallwecode.module.user.persistence.table.UserTable.id
+import kr.co.shallwecode.module.user.persistence.table.UserTable.loginId
+import kr.co.shallwecode.module.user.persistence.table.UserTable.name
+
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
-/**
- * repository에서는 table 객체 자체를 반환하도록 한다.
- */
+
 class UserRepository(private val database: Database) {
 
     /*
      user 조회
      */
-    suspend fun findUser(loginId: String, password: String): UserModel? {
+    suspend fun findUser(loginIdParam: String, password: String): UserModel? {
         return database.dbQuery {
             UserTable.select {
-                (UserTable.loginId eq loginId) and (UserTable.password eq password)
+                (loginId eq loginIdParam) and (UserTable.password eq password)
             }
-                .map { UserTable.toModel(it) }
+                .map { it.toUser() }
                 .singleOrNull()
         }
 
@@ -38,7 +43,18 @@ class UserRepository(private val database: Database) {
                 it[loginId] = request.loginId
                 it[blogUrl] = request.blogUrl
                 it[githubUrl] = request.githubUrl
-            }.resultedValues?.singleOrNull()?.let { UserTable.toModel(it) }
+            }.resultedValues?.singleOrNull()?.let { it.toUser() }
         }
+    }
+
+    private fun ResultRow.toUser(): UserModel {
+        return UserModel(
+            id = this[id],
+            email = this[email],
+            name = this[name],
+            loginId = this[loginId],
+            blogUrl = this[blogUrl],
+            githubUrl = this[githubUrl]
+        )
     }
 }

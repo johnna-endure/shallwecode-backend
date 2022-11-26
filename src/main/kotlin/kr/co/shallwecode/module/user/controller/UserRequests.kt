@@ -1,4 +1,4 @@
-package kr.co.shallwecode.routes.user
+package kr.co.shallwecode.module.user.controller
 
 import kotlinx.serialization.Serializable
 
