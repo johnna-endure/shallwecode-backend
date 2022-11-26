@@ -1,7 +1,6 @@
 package kr.co.shallwecode.module.user.persistence.table
 
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 
 object UserTable : Table() {
@@ -22,6 +21,6 @@ data class UserModel(
     val email: String,
     val name: String,
     val loginId: String,
-    val blogUrl: String?,
-    val githubUrl: String?
+    var blogUrl: String? = null,
+    var githubUrl: String? = null
 )

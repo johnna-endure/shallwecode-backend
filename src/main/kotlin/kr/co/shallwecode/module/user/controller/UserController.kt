@@ -12,7 +12,6 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.controller.AbstractDIController
 
 class UserController(application: Application) : AbstractDIController(application) {
-    private val userRepository: UserRepository by instance()
     private val loginService: LoginService by instance()
     private val registerService: RegisterService by instance()
 

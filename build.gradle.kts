@@ -4,6 +4,8 @@ val logback_version: String by project
 
 val exposed_version: String by project
 val h2_version: String by project
+val mockk_version: String by project
+
 
 
 plugins {
@@ -36,6 +38,7 @@ dependencies {
     implementation("io.ktor:ktor-client-apache-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-cors-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -47,6 +50,7 @@ dependencies {
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("io.mockk:mockk:${mockk_version}")
 
     implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.16.0")
     implementation("org.kodein.di:kodein-di-framework-ktor-server-controller-jvm:7.16.0")
