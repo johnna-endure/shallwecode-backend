@@ -28,7 +28,10 @@ class UserController(application: Application) : AbstractDIController(applicatio
             }
         }
 
-        // 사용자 로그인
+        /*
+        사용자 로그인
+        basic auth 방식 - 세션 추가 필요
+         */
         route("/login") {
             post {
                 val request = call.receive<LoginRequest>()

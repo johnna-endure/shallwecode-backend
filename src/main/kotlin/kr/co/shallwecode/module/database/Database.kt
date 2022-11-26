@@ -11,8 +11,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class Database {
     init {
         val driverClassName = "org.h2.Driver"
-        val jdbcURL = "jdbc:h2:file:~/shallwecode/db"
-        val database = Database.connect(jdbcURL, driverClassName)
+        val jdbcURL = "jdbc:h2:file:~/testdb"
+        val database = Database.connect(jdbcURL, driverClassName, "test", "test")
 
         // ddl auto create (개발용)
         transaction(database) {
