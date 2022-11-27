@@ -1,6 +1,5 @@
 package kr.co.shallwecode.module.user.controller
 
-import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -11,6 +10,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kr.co.shallwecode.module.user.persistence.table.UserModel
 import kr.co.shallwecode.module.user.serivce.LoginService
+import kr.co.shallwecode.module.user.serivce.RegisterService
 import kr.co.shallwecode.module.user.userModule
 import kr.co.shallwecode.module.user.userRouting
 import kr.co.shallwecode.plugins.configureSerialization
@@ -26,13 +26,19 @@ class UserControllerTest {
 
     private lateinit var loginService: LoginService
 
+    private lateinit var registerService: RegisterService
+
     @BeforeTest
     fun beforeTest() {
         loginService = mockk()
+        registerService = mockk()
     }
 
+    /**
+    로그인에 성공하는 경우
+     */
     @Test
-    fun loginTest() = testApplication {
+    fun login_success() = testApplication {
         // given
         application {
             di {
@@ -42,7 +48,11 @@ class UserControllerTest {
             userRouting()
             configureSerialization()
         }
-        val client = createClient(this)
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
 
         val expectedBody = UserModel(
             id = 2,
@@ -64,15 +74,127 @@ class UserControllerTest {
         assertEquals(response.body(), expectedBody)
     }
 
-    private fun createClient(
-        applicationTestBuilder: ApplicationTestBuilder
+    /**
+     * 인증정보가 맞지 않아 로그인에 실패하는 경우
+     */
+    @Test
+    fun login_failed_not_matched_credentials() = testApplication {
+        // given
+        application {
+            di {
+                import(userModule)
+                bind(overrides = true) { singleton { loginService } }
+            }
+            userRouting()
+            configureSerialization()
+        }
 
-    ): HttpClient {
-        return applicationTestBuilder.createClient {
+        val client = createClient {
             install(ContentNegotiation) {
                 json()
             }
         }
+
+        // when
+        coEvery { loginService.login(any()) } returns (null)
+
+
+        val response = client.post("/login") {
+            contentType(ContentType.Application.Json)
+            setBody(LoginRequest("loginId", "1234"))
+        }
+
+        // then
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
     }
+
+    /**
+     * 회원 가입에 성공하는 경우
+     */
+    @Test
+    fun register_failed() = testApplication {
+        // given
+        application {
+            di {
+                import(userModule)
+                bind(overrides = true) { singleton { registerService } }
+            }
+            userRouting()
+            configureSerialization()
+        }
+
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        // when
+        coEvery { registerService.register(any()) } returns (null)
+
+
+        val response = client.post("/user") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserCreateRequest(
+                    password = "password",
+                    email = "email",
+                    loginId = "loginId"
+                )
+            )
+        }
+
+        // then
+        assertEquals(HttpStatusCode.InternalServerError, response.status)
+    }
+
+    /**
+     * 회원 가입에 성공하는 경우
+     */
+    @Test
+    fun register_success() = testApplication {
+        // given
+        application {
+            di {
+                import(userModule)
+                bind(overrides = true) { singleton { registerService } }
+            }
+            userRouting()
+            configureSerialization()
+        }
+
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        val expectedBody = UserModel(
+            id = 2,
+            email = "hello",
+            name = "world",
+            loginId = "loginId"
+        )
+
+        // when
+        coEvery { registerService.register(any()) } returns (expectedBody)
+
+
+        val response = client.post("/user") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserCreateRequest(
+                    password = "password",
+                    email = "email",
+                    loginId = "loginId"
+                )
+            )
+        }
+
+        // then
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(expectedBody, response.body())
+    }
+
 }
 
