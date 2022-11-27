@@ -13,6 +13,7 @@ import kr.co.shallwecode.module.user.serivce.LoginService
 import kr.co.shallwecode.module.user.serivce.RegisterService
 import kr.co.shallwecode.module.user.userModule
 import kr.co.shallwecode.module.user.userRouting
+import kr.co.shallwecode.plugins.configureSecurity
 import kr.co.shallwecode.plugins.configureSerialization
 import org.kodein.di.bind
 import org.kodein.di.ktor.di
@@ -45,6 +46,7 @@ class UserControllerTest {
                 import(userModule)
                 bind(overrides = true) { singleton { loginService } }
             }
+            configureSecurity()
             userRouting()
             configureSerialization()
         }
@@ -85,7 +87,9 @@ class UserControllerTest {
                 import(userModule)
                 bind(overrides = true) { singleton { loginService } }
             }
+
             userRouting()
+            configureSecurity()
             configureSerialization()
         }
 

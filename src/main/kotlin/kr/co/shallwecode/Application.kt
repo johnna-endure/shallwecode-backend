@@ -5,8 +5,8 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kr.co.shallwecode.module.user.userModule
 import kr.co.shallwecode.module.user.userRouting
-
-import kr.co.shallwecode.plugins.*
+import kr.co.shallwecode.plugins.configureSecurity
+import kr.co.shallwecode.plugins.configureSerialization
 import org.kodein.di.ktor.di
 
 fun main() {
@@ -16,7 +16,7 @@ fun main() {
             import(userModule)
         }
 
-
+        configureSecurity()
         configureSerialization()
         configureRouting()
     }.start(wait = true)
