@@ -1,13 +1,14 @@
 package kr.co.shallwecode.module.user.controller
 
+import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kr.co.shallwecode.module.user.persistence.table.UserModel
 import kr.co.shallwecode.module.user.serivce.LoginService
 import kr.co.shallwecode.module.user.userModule
@@ -23,50 +24,55 @@ import kotlin.test.assertEquals
 
 class UserControllerTest {
 
-//    @MockK
-//    lateinit var userRepository: UserRepository
-
-    //    @InjectMockKs
-    @MockK
-    lateinit var loginService: LoginService
+    private lateinit var loginService: LoginService
 
     @BeforeTest
     fun beforeTest() {
-        MockKAnnotations.init(this)
-        coEvery { loginService.login(any()) } returns (UserModel(
-            id = 2,
-            email = "hello",
-            name = "world",
-            loginId = "loginId"
-        ))
-
-        println("beforeTest")
+        loginService = mockk()
     }
 
     @Test
     fun loginTest() = testApplication {
-
+        // given
         application {
             di {
-                import(userModule, true)
-                bind<LoginService>(overrides = true) { singleton { loginService } }
+                import(userModule)
+                bind(overrides = true) { singleton { loginService } }
             }
             userRouting()
             configureSerialization()
         }
+        val client = createClient(this)
 
+        val expectedBody = UserModel(
+            id = 2,
+            email = "hello",
+            name = "world",
+            loginId = "loginId"
+        )
 
-        val client = createClient {
-            install(ContentNegotiation) {
-                json()
-            }
-        }
+        // when
+        coEvery { loginService.login(any()) } returns (expectedBody)
 
         val response = client.post("/login") {
             contentType(ContentType.Application.Json)
             setBody(LoginRequest("loginId", "1234"))
         }
 
+        // then
         assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(response.body(), expectedBody)
+    }
+
+    private fun createClient(
+        applicationTestBuilder: ApplicationTestBuilder
+
+    ): HttpClient {
+        return applicationTestBuilder.createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
     }
 }
+
