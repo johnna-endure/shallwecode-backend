@@ -21,6 +21,7 @@ import org.kodein.di.singleton
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 
 class UserControllerTest {
@@ -56,15 +57,16 @@ class UserControllerTest {
             }
         }
 
-        val expectedBody = UserModel(
+        val user = UserModel(
             id = 2,
             email = "hello",
             name = "world",
             loginId = "loginId"
         )
 
+
         // when
-        coEvery { loginService.login(any()) } returns (expectedBody)
+        coEvery { loginService.login(any()) } returns (user)
 
         val response = client.post("/login") {
             contentType(ContentType.Application.Json)
@@ -73,7 +75,8 @@ class UserControllerTest {
 
         // then
         assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals(response.body(), expectedBody)
+        assertEquals(response.body<LoginResponse>().user, user)
+        assertNotNull(response.body<LoginResponse>().token)
     }
 
     /**
