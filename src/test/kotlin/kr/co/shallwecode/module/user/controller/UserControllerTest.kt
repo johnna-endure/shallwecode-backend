@@ -9,8 +9,8 @@ import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kr.co.shallwecode.module.user.persistence.table.UserModel
-import kr.co.shallwecode.module.user.serivce.LoginService
-import kr.co.shallwecode.module.user.serivce.RegisterService
+import kr.co.shallwecode.module.user.serivce.AuthenticationService
+import kr.co.shallwecode.module.user.serivce.UserService
 import kr.co.shallwecode.module.user.userModule
 import kr.co.shallwecode.module.user.userRouting
 import kr.co.shallwecode.plugins.configureSecurity
@@ -26,14 +26,14 @@ import kotlin.test.assertNotNull
 
 class UserControllerTest {
 
-    private lateinit var loginService: LoginService
+    private lateinit var authenticationService: AuthenticationService
 
-    private lateinit var registerService: RegisterService
+    private lateinit var userService: UserService
 
     @BeforeTest
     fun beforeTest() {
-        loginService = mockk()
-        registerService = mockk()
+        authenticationService = mockk()
+        userService = mockk()
     }
 
     /**
@@ -45,7 +45,7 @@ class UserControllerTest {
         application {
             di {
                 import(userModule)
-                bind(overrides = true) { singleton { loginService } }
+                bind(overrides = true) { singleton { authenticationService } }
             }
             configureSecurity()
             userRouting()
@@ -66,7 +66,7 @@ class UserControllerTest {
 
 
         // when
-        coEvery { loginService.login(any()) } returns (user)
+        coEvery { authenticationService.login(any()) } returns (user)
 
         val response = client.post("/login") {
             contentType(ContentType.Application.Json)
@@ -88,7 +88,7 @@ class UserControllerTest {
         application {
             di {
                 import(userModule)
-                bind(overrides = true) { singleton { loginService } }
+                bind(overrides = true) { singleton { authenticationService } }
             }
 
             userRouting()
@@ -103,7 +103,7 @@ class UserControllerTest {
         }
 
         // when
-        coEvery { loginService.login(any()) } returns (null)
+        coEvery { authenticationService.login(any()) } returns (null)
 
 
         val response = client.post("/login") {
@@ -124,7 +124,7 @@ class UserControllerTest {
         application {
             di {
                 import(userModule)
-                bind(overrides = true) { singleton { registerService } }
+                bind(overrides = true) { singleton { userService } }
             }
             userRouting()
             configureSerialization()
@@ -137,7 +137,7 @@ class UserControllerTest {
         }
 
         // when
-        coEvery { registerService.register(any()) } returns (null)
+        coEvery { userService.createUser(any()) } returns (null)
 
 
         val response = client.post("/user") {
@@ -164,7 +164,7 @@ class UserControllerTest {
         application {
             di {
                 import(userModule)
-                bind(overrides = true) { singleton { registerService } }
+                bind(overrides = true) { singleton { userService } }
             }
             userRouting()
             configureSerialization()
@@ -184,7 +184,7 @@ class UserControllerTest {
         )
 
         // when
-        coEvery { registerService.register(any()) } returns (expectedBody)
+        coEvery { userService.createUser(any()) } returns (expectedBody)
 
 
         val response = client.post("/user") {

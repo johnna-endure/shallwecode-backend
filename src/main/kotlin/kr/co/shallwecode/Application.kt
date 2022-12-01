@@ -13,16 +13,6 @@ import kr.co.shallwecode.plugins.configureSerialization
 import org.kodein.di.ktor.di
 
 fun main() {
-//    embeddedServer(Netty, port = 8080) {
-//        di {
-//            import(userModule)
-//        }
-//
-//        configureHTTP()
-//        configureSecurity()
-//        configureSerialization()
-//        configureRouting()
-//    }.start(wait = true)
     embeddedServer(Netty, environment = applicationEngineEnvironment {
         config = HoconApplicationConfig(ConfigFactory.load())
 
