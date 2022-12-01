@@ -1,6 +1,7 @@
 package kr.co.shallwecode.module.database
 
 import kotlinx.coroutines.Dispatchers
+import kr.co.shallwecode.module.user.persistence.table.AuthenticationTable
 import kr.co.shallwecode.module.user.persistence.table.UserTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -17,10 +18,10 @@ class Database {
         // ddl auto create (개발용)
         transaction(database) {
             SchemaUtils.drop(UserTable)
-        }
+            SchemaUtils.drop(AuthenticationTable)
 
-        transaction(database) {
             SchemaUtils.create(UserTable)
+            SchemaUtils.create(AuthenticationTable)
         }
     }
 
