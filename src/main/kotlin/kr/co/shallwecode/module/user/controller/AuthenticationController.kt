@@ -33,29 +33,29 @@ class AuthenticationController(application: Application) : AbstractDIController(
         route("/login") {
             post {
                 val request = call.receive<LoginRequest>()
-                // 인증 정보 조회
-                val authInfo = authenticationService.login(request)
 
-                // 사용자 정보 조회
-                val userId =
-                    authInfo?.userId ?: return@post call.respond(HttpStatusCode.Unauthorized, "인증 정보를 찾을 수 없습니다.")
-                val userInfo =
-                    userService.find(userId) ?: return@post call.respond(
-                        HttpStatusCode.Unauthorized,
-                        "사용자 정보를 찾을 수 없습니다."
-                    )
+                val authInfo = authenticationService.findAuth(request.loginId, request.password)
 
-                // 토큰 생성
-                val token = JWT.create()
-                    .withIssuer(issuer)
-                    .withClaim("userId", userInfo.id)
-                    .withExpiresAt(Date(System.currentTimeMillis() + exp))
-                    .sign(Algorithm.HMAC256(secret))
+                val userId = authInfo?.userId
+                if (userId == null) {
+                    call.respond(HttpStatusCode.Unauthorized, "인증 정보 조회 실패")
+                    return@post
+                }
+
+                val userInfo = userService.find(userId)
+                if (userInfo == null) {
+                    call.respond(HttpStatusCode.Unauthorized, "사용자 정보 조회 실패")
+                    return@post
+                }
 
                 call.respond(
                     LoginResponse(
                         user = userInfo,
-                        token = token
+                        token = JWT.create()
+                            .withIssuer(issuer)
+                            .withClaim("userId", userInfo.id)
+                            .withExpiresAt(Date(System.currentTimeMillis() + exp))
+                            .sign(Algorithm.HMAC256(secret))
                     )
                 )
             }

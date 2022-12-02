@@ -17,8 +17,8 @@ class Database {
 
         // ddl auto create (개발용)
         transaction(database) {
-            SchemaUtils.drop(UserTable)
             SchemaUtils.drop(AuthenticationTable)
+            SchemaUtils.drop(UserTable)
 
             SchemaUtils.create(UserTable)
             SchemaUtils.create(AuthenticationTable)

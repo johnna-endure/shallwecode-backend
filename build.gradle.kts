@@ -7,7 +7,6 @@ val h2_version: String by project
 val mockk_version: String by project
 
 
-
 plugins {
     application
     kotlin("jvm") version "1.7.20"
@@ -29,6 +28,9 @@ repositories {
 }
 
 dependencies {
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.16.0")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-controller-jvm:7.16.0")
+
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-sessions-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
@@ -41,17 +43,16 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
+
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
+    implementation("com.h2database:h2:$h2_version")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("com.h2database:h2:$h2_version")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("io.mockk:mockk:${mockk_version}")
 
-    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.16.0")
-    implementation("org.kodein.di:kodein-di-framework-ktor-server-controller-jvm:7.16.0")
 }
