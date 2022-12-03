@@ -8,8 +8,8 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.mockk
-import kr.co.shallwecode.module.user.persistence.table.UserModel
 import kr.co.shallwecode.module.user.serivce.UserService
+import kr.co.shallwecode.module.user.table.UserModel
 import kr.co.shallwecode.module.user.userModule
 import kr.co.shallwecode.module.user.userRouting
 import kr.co.shallwecode.plugins.configureSecurity

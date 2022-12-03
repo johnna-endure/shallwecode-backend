@@ -1,4 +1,4 @@
-package kr.co.shallwecode.module.user.persistence.table
+package kr.co.shallwecode.module.user.table
 
 import kotlinx.serialization.Serializable
 import kr.co.shallwecode.module.user.controller.AuthInfoCreateRequest

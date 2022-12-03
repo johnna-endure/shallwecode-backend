@@ -1,8 +1,8 @@
 package kr.co.shallwecode.module.database
 
 import kotlinx.coroutines.Dispatchers
-import kr.co.shallwecode.module.user.persistence.table.Authentication
-import kr.co.shallwecode.module.user.persistence.table.User
+import kr.co.shallwecode.module.user.table.Authentication
+import kr.co.shallwecode.module.user.table.User
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction

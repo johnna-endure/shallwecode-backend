@@ -8,8 +8,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import kr.co.shallwecode.module.user.persistence.table.UserModel
 import kr.co.shallwecode.module.user.serivce.UserService
+import kr.co.shallwecode.module.user.table.UserModel
 import org.kodein.di.instance
 import org.kodein.di.ktor.controller.AbstractDIController
 import java.util.*

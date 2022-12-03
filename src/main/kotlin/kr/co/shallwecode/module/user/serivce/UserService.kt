@@ -5,7 +5,7 @@ import kr.co.shallwecode.module.database.Database
 import kr.co.shallwecode.module.user.constant.AuthenticationSource
 import kr.co.shallwecode.module.user.controller.AuthInfoCreateRequest
 import kr.co.shallwecode.module.user.controller.UserRegisterRequest
-import kr.co.shallwecode.module.user.persistence.table.*
+import kr.co.shallwecode.module.user.table.*
 
 class UserService(
     private val database: Database
