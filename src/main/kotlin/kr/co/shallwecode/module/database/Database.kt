@@ -1,8 +1,8 @@
 package kr.co.shallwecode.module.database
 
 import kotlinx.coroutines.Dispatchers
-import kr.co.shallwecode.module.user.persistence.table.AuthenticationTable
-import kr.co.shallwecode.module.user.persistence.table.UserTable
+import kr.co.shallwecode.module.user.persistence.table.Authentication
+import kr.co.shallwecode.module.user.persistence.table.User
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -17,11 +17,11 @@ class Database {
 
         // ddl auto create (개발용)
         transaction(database) {
-            SchemaUtils.drop(AuthenticationTable)
-            SchemaUtils.drop(UserTable)
+            SchemaUtils.drop(Authentication)
+            SchemaUtils.drop(User)
 
-            SchemaUtils.create(UserTable)
-            SchemaUtils.create(AuthenticationTable)
+            SchemaUtils.create(User)
+            SchemaUtils.create(Authentication)
         }
     }
 
