@@ -54,19 +54,12 @@ class UserController(application: Application) : AbstractDIController(applicatio
 
                 try {
                     val userId = userService.register(request)
-                    call.respond(userId)
+                    call.respond("userId" to userId)
                 } catch (ex: Exception) {
                     call.application.environment.log.error("register failed. ${ex.stackTraceToString()}")
                     call.respond(HttpStatusCode.InternalServerError)
                     return@post
                 }
-            }
-        }
-
-        // 테스트용 api
-        route("/test") {
-            get {
-                call.respondText("hello world!")
             }
         }
     }
