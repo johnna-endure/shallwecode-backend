@@ -14,6 +14,7 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.controller.AbstractDIController
 import java.util.*
 
+
 class UserController(application: Application) : AbstractDIController(application) {
     private val userService: UserService by instance()
 
@@ -26,6 +27,10 @@ class UserController(application: Application) : AbstractDIController(applicatio
         val exp = config.property("jwt.exp").getString().toLong()
 
         route("/login") {
+
+            @Serializable
+            data class LoginResponse(val user: UserModel, val token: String)
+
             post {
                 val request = call.receive<LoginRequest>()
                 try {
@@ -49,22 +54,33 @@ class UserController(application: Application) : AbstractDIController(applicatio
 
         // 사용자 정보 저장
         route("/user") {
+            @Serializable
+            data class UserCreateResponse(val userId: Long)
+
             post {
                 val request = call.receive<UserRegisterRequest>()
 
                 try {
                     val userId = userService.register(request)
-                    call.respond("userId" to userId)
+                    call.respond(UserCreateResponse(userId))
                 } catch (ex: Exception) {
                     call.application.environment.log.error("register failed. ${ex.stackTraceToString()}")
                     call.respond(HttpStatusCode.InternalServerError)
                     return@post
                 }
             }
+
+
         }
     }
 
 }
+
+@Serializable
+data class LoginRequest(
+    val loginId: String,
+    val password: String
+)
 
 @Serializable
 data class UserRegisterRequest(
@@ -76,14 +92,6 @@ data class UserRegisterRequest(
     val githubUrl: String? = null
 )
 
-
-@Serializable
-data class LoginRequest(
-    val loginId: String,
-    val password: String
-)
-
-
 @Serializable
 data class AuthInfoCreateRequest(
     val userId: Long,
@@ -93,6 +101,4 @@ data class AuthInfoCreateRequest(
 )
 
 
-@Serializable
-data class LoginResponse(val user: UserModel, val token: String)
 
