@@ -7,6 +7,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.Serializable
 import kr.co.shallwecode.module.post.service.PostService
 import kr.co.shallwecode.plugins.AuthenticateName
 import org.kodein.di.instance
@@ -62,6 +63,7 @@ class PostController(application: Application) : AbstractDIController(applicatio
     }
 }
 
+@Serializable
 data class PostCreateRequest(
     val title: String,
     val content: String,

@@ -7,9 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
 import kr.co.shallwecode.module.user.serivce.UserService
-import kr.co.shallwecode.module.user.table.UserModel
 import org.kodein.di.instance
 import org.kodein.di.ktor.controller.AbstractDIController
 import java.util.*
@@ -26,10 +24,6 @@ class UserController(application: Application) : AbstractDIController(applicatio
         val exp = config.property("jwt.exp").getString().toLong()
         // TODO 로직 다른 Auth 컨트롤러로 분리할 것
         route("/login") {
-
-            @Serializable
-            data class LoginResponse(val user: UserModel, val token: String)
-
             post {
                 val request = call.receive<LoginRequest>()
                 try {
@@ -53,9 +47,6 @@ class UserController(application: Application) : AbstractDIController(applicatio
 
         // 사용자 정보 저장
         route("/user") {
-            @Serializable
-            data class UserCreateResponse(val userId: Long)
-
             post {
                 val request = call.receive<UserRegisterRequest>()
 
@@ -71,7 +62,5 @@ class UserController(application: Application) : AbstractDIController(applicatio
         }
     }
 }
-
-
 
 

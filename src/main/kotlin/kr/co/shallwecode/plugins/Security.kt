@@ -22,6 +22,10 @@ fun Application.configureSecurity() {
                     .acceptExpiresAt(0)
                     .build()
             )
+            // TODO userId 있는지 확인
+            validate { jwtCredential ->
+                JWTPrincipal(jwtCredential.payload)
+            }
 
             challenge { _, _ ->
                 call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
