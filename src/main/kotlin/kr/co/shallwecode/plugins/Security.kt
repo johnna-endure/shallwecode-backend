@@ -14,7 +14,7 @@ fun Application.configureSecurity() {
     val issuer = environment.config.property("jwt.issuer").getString()
 
     authentication {
-        jwt(AuthenticationConfigName.AUTH_JWT.name) {
+        jwt(AuthenticateName.AUTH_JWT.name) {
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(secret))
@@ -31,6 +31,6 @@ fun Application.configureSecurity() {
 
 }
 
-enum class AuthenticationConfigName {
+enum class AuthenticateName {
     AUTH_JWT
 }

@@ -14,10 +14,9 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.controller.AbstractDIController
 import java.util.*
 
-
 class UserController(application: Application) : AbstractDIController(application) {
     private val userService: UserService by instance()
-
+    private val logger = application.environment.log
 
     override fun Route.getRoutes() {
         val config = environment?.config ?: throw RuntimeException("ApplicationConfig 를 불러올 수 없습니다.")
@@ -25,7 +24,7 @@ class UserController(application: Application) : AbstractDIController(applicatio
         val secret = config.property("jwt.secret").getString()
         val issuer = config.property("jwt.issuer").getString()
         val exp = config.property("jwt.exp").getString().toLong()
-
+        // TODO 로직 다른 Auth 컨트롤러로 분리할 것
         route("/login") {
 
             @Serializable
@@ -46,7 +45,7 @@ class UserController(application: Application) : AbstractDIController(applicatio
                         )
                     )
                 } catch (ex: Exception) {
-                    call.application.environment.log.debug("login failed : ${ex.stackTraceToString()}")
+                    logger.debug("login failed : ${ex.stackTraceToString()}")
                     call.respond(HttpStatusCode.Unauthorized, "login failed")
                 }
             }
@@ -64,41 +63,15 @@ class UserController(application: Application) : AbstractDIController(applicatio
                     val userId = userService.register(request)
                     call.respond(UserCreateResponse(userId))
                 } catch (ex: Exception) {
-                    call.application.environment.log.error("register failed. ${ex.stackTraceToString()}")
+                    logger.error("register failed. ${ex.stackTraceToString()}")
                     call.respond(HttpStatusCode.InternalServerError)
                     return@post
                 }
             }
-
-
         }
     }
-
 }
 
-@Serializable
-data class LoginRequest(
-    val loginId: String,
-    val password: String
-)
-
-@Serializable
-data class UserRegisterRequest(
-    val password: String,
-    val email: String,
-    val loginId: String,
-    val name: String? = null,
-    val blogUrl: String? = null,
-    val githubUrl: String? = null
-)
-
-@Serializable
-data class AuthInfoCreateRequest(
-    val userId: Long,
-    var from: String? = null,
-    val loginId: String,
-    val password: String
-)
 
 
 
