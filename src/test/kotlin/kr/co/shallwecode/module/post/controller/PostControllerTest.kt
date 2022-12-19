@@ -8,6 +8,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -41,9 +42,12 @@ class PostControllerTest {
         }
         val client = createClient(this)
 
-        // TODO 외부파일에서 읽어오도록 수정 필요
-        val issuer = "shall_we_code"
-        val secret = "shallwecode_temp_secret"
+        environment {
+            config = ApplicationConfig("application-test.conf")
+        }
+
+        val issuer = "test_issuer"
+        val secret = "test_secret"
         val exp = "86400"
         // when
         val expectedPostId = 1L
@@ -52,7 +56,7 @@ class PostControllerTest {
 
         //then
         val validToken = JWT.create()
-            .withIssuer("shall_we_code")
+            .withIssuer(issuer)
             .withClaim("userId", 1L)
             .withExpiresAt(Date(System.currentTimeMillis() + exp.toLong()))
             .sign(Algorithm.HMAC256(secret))
