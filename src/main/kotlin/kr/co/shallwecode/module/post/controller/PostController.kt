@@ -8,6 +8,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import kr.co.shallwecode.module.constant.JwtConstant
 import kr.co.shallwecode.module.post.service.PostService
 import kr.co.shallwecode.plugins.AuthenticateName
 import org.kodein.di.instance
@@ -31,15 +32,15 @@ class PostController(application: Application) : AbstractDIController(applicatio
             route("/post") {
                 post {
                     val principal = call.principal<JWTPrincipal>()
-                    val userId = principal?.getClaim("userId", Long::class)
+                    val userId = principal?.getClaim(JwtConstant.CLAIM_USER_ID.value, Long::class)
                         ?: return@post call.respond(HttpStatusCode.Unauthorized, "empty userId in token")
 
-                    val request = call.receive<PostCreateRequest>()
+                    val request = call.receive<PostSaveRequest>()
                     try {
                         val postId = postService.create(request, userId)
                         call.respond(postId)
                     } catch (ex: Exception) {
-                        logger.debug("login failed : ${ex.stackTraceToString()}")
+                        logger.error("post create failed : ${ex.stackTraceToString()}")
                         call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
@@ -47,7 +48,19 @@ class PostController(application: Application) : AbstractDIController(applicatio
 
             route("/posts/{postId}", HttpMethod.Put) {
                 put {
+                    val postId = call.parameters["postId"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+                    val principal = call.principal<JWTPrincipal>()
+                    val userId = principal?.getClaim(JwtConstant.CLAIM_USER_ID.value, Long::class)
+                        ?: return@put call.respond(HttpStatusCode.Unauthorized, "empty userId in token")
 
+                    val request = call.receive<PostSaveRequest>()
+                    try {
+                        postService.modify(request, userId, postId.toLong())
+                        call.respond(HttpStatusCode.OK)
+                    } catch (ex: Exception) {
+                        logger.error("post update failed : ${ex.stackTraceToString()}")
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
                 }
 
                 delete {
@@ -64,7 +77,7 @@ class PostController(application: Application) : AbstractDIController(applicatio
 }
 
 @Serializable
-data class PostCreateRequest(
+data class PostSaveRequest(
     val title: String,
     val content: String,
 )

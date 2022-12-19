@@ -1,11 +1,9 @@
 package kr.co.shallwecode.module.post.table
 
 import kotlinx.serialization.Serializable
-import kr.co.shallwecode.module.post.controller.PostCreateRequest
+import kr.co.shallwecode.module.post.controller.PostSaveRequest
 import kr.co.shallwecode.module.user.table.User
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.javatime.datetime
 import java.time.format.DateTimeFormatter
@@ -20,12 +18,21 @@ object Post : Table() {
     val updated = datetime("updated").defaultExpression(CurrentDateTime())
 }
 
-fun Post.create(request: PostCreateRequest, userId: Long): Long {
+fun create(request: PostSaveRequest, userId: Long): Long {
     return Post.insert {
         it[Post.userId] = userId
         it[title] = request.title
         it[content] = request.content
     }.resultedValues?.singleOrNull()?.toPost()?.id ?: throw RuntimeException("post create failed")
+}
+
+fun Post.modify(request: PostSaveRequest, userIdParam: Long, postIdParam: Long): Int {
+    return Post.update({
+        (userId eq userIdParam) and (id eq postIdParam)
+    }) {
+        it[title] = request.title
+        it[content] = request.content
+    }
 }
 
 @Serializable

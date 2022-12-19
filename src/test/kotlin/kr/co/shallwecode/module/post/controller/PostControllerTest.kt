@@ -61,7 +61,7 @@ class PostControllerTest {
             contentType(ContentType.Application.Json)
             bearerAuth(validToken)
             setBody(
-                PostCreateRequest(
+                PostSaveRequest(
                     title = "hello",
                     content = "world"
                 )
@@ -99,7 +99,7 @@ class PostControllerTest {
             contentType(ContentType.Application.Json)
             bearerAuth(validToken)
             setBody(
-                PostCreateRequest(
+                PostSaveRequest(
                     title = "hello",
                     content = "world"
                 )
