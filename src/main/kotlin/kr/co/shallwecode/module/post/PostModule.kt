@@ -21,14 +21,3 @@ fun Application.postRouting() {
         controller { PostController(instance()) }
     }
 }
-//
-//val userModule = DI.Module(name = "userModule") {
-//    import(dbModule)
-//    bind { singleton { UserService(instance()) } }
-//}
-//
-//fun Application.userRouting() {
-//    routing {
-//        controller { UserController(instance()) }
-//    }
-//}

@@ -12,6 +12,7 @@ import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.mockk
+import kr.co.shallwecode.constant.TestEnvironmentConstant.*
 import kr.co.shallwecode.module.post.postModule
 import kr.co.shallwecode.module.post.postRouting
 import kr.co.shallwecode.module.post.service.PostService
@@ -35,6 +36,42 @@ class PostControllerTest {
     }
 
     @Test
+    fun post_create_failed() = testApplication {
+        // given
+        initDependency(this) {
+            bind(overrides = true) { singleton { postService } }
+        }
+        val client = createClient(this)
+
+        environment {
+            config = ApplicationConfig("application-test.conf")
+        }
+
+        // when
+        coEvery { postService.create(any(), any()) } throws RuntimeException("test exception")
+
+        //then
+        val validToken = JWT.create()
+            .withIssuer(JWT_ISSUER.value)
+            .withClaim("userId", 1L)
+            .withExpiresAt(Date(System.currentTimeMillis() + JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(JWT_SECRET.value))
+
+        val response = client.post("/post") {
+            contentType(ContentType.Application.Json)
+            bearerAuth(validToken)
+            setBody(
+                PostCreateRequest(
+                    title = "hello",
+                    content = "world"
+                )
+            )
+        }
+
+        assertEquals(HttpStatusCode.InternalServerError, response.status)
+    }
+
+    @Test
     fun post_create_success() = testApplication {
         // given
         initDependency(this) {
@@ -46,9 +83,6 @@ class PostControllerTest {
             config = ApplicationConfig("application-test.conf")
         }
 
-        val issuer = "test_issuer"
-        val secret = "test_secret"
-        val exp = "86400"
         // when
         val expectedPostId = 1L
         coEvery { postService.create(any(), any()) } returns (expectedPostId)
@@ -56,10 +90,10 @@ class PostControllerTest {
 
         //then
         val validToken = JWT.create()
-            .withIssuer(issuer)
+            .withIssuer(JWT_ISSUER.value)
             .withClaim("userId", 1L)
-            .withExpiresAt(Date(System.currentTimeMillis() + exp.toLong()))
-            .sign(Algorithm.HMAC256(secret))
+            .withExpiresAt(Date(System.currentTimeMillis() + JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(JWT_SECRET.value))
 
         val response = client.post("/post") {
             contentType(ContentType.Application.Json)
@@ -74,7 +108,6 @@ class PostControllerTest {
 
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals(expectedPostId, response.body())
-
     }
 
     private fun initDependency(applicationTestBuilder: ApplicationTestBuilder, mocks: DI.MainBuilder.() -> Unit) {
