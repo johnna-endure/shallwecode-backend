@@ -22,7 +22,7 @@ fun Application.configureSecurity() {
                     .acceptExpiresAt(0)
                     .build()
             )
-            // TODO userId 있는지 확인
+            
             validate { jwtCredential ->
                 JWTPrincipal(jwtCredential.payload)
             }
