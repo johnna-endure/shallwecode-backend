@@ -185,7 +185,7 @@ class UserControllerTest {
 
         // then
         assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals(2L, response.body())
+        assertEquals(UserCreateResponse(2L), response.body())
     }
 
 }
