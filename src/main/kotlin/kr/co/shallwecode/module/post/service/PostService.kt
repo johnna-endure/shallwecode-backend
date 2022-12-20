@@ -4,6 +4,7 @@ import kr.co.shallwecode.module.database.Database
 import kr.co.shallwecode.module.post.controller.PostSaveRequest
 import kr.co.shallwecode.module.post.table.Post
 import kr.co.shallwecode.module.post.table.modify
+import kr.co.shallwecode.module.post.table.softDelete
 
 
 class PostService(private val database: Database) {
@@ -14,5 +15,9 @@ class PostService(private val database: Database) {
 
     suspend fun modify(request: PostSaveRequest, userId: Long, postId: Long) {
         return database.dbQuery { Post.modify(request, userId, postId) }
+    }
+
+    suspend fun softDelete(postId: Long, userId: Long) {
+        return database.dbQuery { Post.softDelete(postId, userId) }
     }
 }

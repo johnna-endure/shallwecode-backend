@@ -35,6 +35,12 @@ fun Post.modify(request: PostSaveRequest, userIdParam: Long, postIdParam: Long):
     }
 }
 
+fun Post.softDelete(postId: Long, userIdParam: Long) {
+    Post.update({ (id eq postId) and (userId eq userIdParam) }) {
+        it[deleted] = true
+    }
+}
+
 @Serializable
 data class PostModel(
     val id: Long,

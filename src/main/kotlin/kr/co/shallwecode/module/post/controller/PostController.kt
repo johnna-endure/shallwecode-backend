@@ -8,6 +8,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import kr.co.shallwecode.module.constant.ExceptionMessage
 import kr.co.shallwecode.module.constant.JwtConstant
 import kr.co.shallwecode.module.post.service.PostService
 import kr.co.shallwecode.plugins.AuthenticateName
@@ -31,9 +32,11 @@ class PostController(application: Application) : AbstractDIController(applicatio
         authenticate(AuthenticateName.AUTH_JWT.name) {
             route("/post") {
                 post {
-                    val principal = call.principal<JWTPrincipal>()
-                    val userId = principal?.getClaim(JwtConstant.CLAIM_USER_ID.value, Long::class)
-                        ?: return@post call.respond(HttpStatusCode.Unauthorized, "empty userId in token")
+                    val userId = getUserIdFromPrincipal(call)
+                        ?: return@post call.respond(
+                            HttpStatusCode.Unauthorized,
+                            ExceptionMessage.EMPTY_USER_ID_IN_TOKEN.message
+                        )
 
                     val request = call.receive<PostSaveRequest>()
                     try {
@@ -48,14 +51,17 @@ class PostController(application: Application) : AbstractDIController(applicatio
 
             route("/posts/{postId}", HttpMethod.Put) {
                 put {
-                    val postId = call.parameters["postId"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-                    val principal = call.principal<JWTPrincipal>()
-                    val userId = principal?.getClaim(JwtConstant.CLAIM_USER_ID.value, Long::class)
-                        ?: return@put call.respond(HttpStatusCode.Unauthorized, "empty userId in token")
+                    val postId =
+                        call.parameters["postId"]?.toLong() ?: return@put call.respond(HttpStatusCode.BadRequest)
+                    val userId = getUserIdFromPrincipal(call)
+                        ?: return@put call.respond(
+                            HttpStatusCode.Unauthorized,
+                            ExceptionMessage.EMPTY_USER_ID_IN_TOKEN.message
+                        )
 
                     val request = call.receive<PostSaveRequest>()
                     try {
-                        postService.modify(request, userId, postId.toLong())
+                        postService.modify(request, userId, postId)
                         call.respond(HttpStatusCode.OK)
                     } catch (ex: Exception) {
                         logger.error("post update failed : ${ex.stackTraceToString()}")
@@ -64,7 +70,15 @@ class PostController(application: Application) : AbstractDIController(applicatio
                 }
 
                 delete {
+                    val postId =
+                        call.parameters["postId"]?.toLong() ?: return@delete call.respond(HttpStatusCode.BadRequest)
+                    val userId = getUserIdFromPrincipal(call) ?: return@delete call.respond(
+                        HttpStatusCode.Unauthorized,
+                        ExceptionMessage.EMPTY_USER_ID_IN_TOKEN
+                    )
 
+                    postService.softDelete(postId, userId)
+                    call.respond(HttpStatusCode.OK)
                 }
             }
 
@@ -74,6 +88,11 @@ class PostController(application: Application) : AbstractDIController(applicatio
             }
         }
     }
+}
+
+private fun getUserIdFromPrincipal(call: ApplicationCall): Long? {
+    val principal = call.principal<JWTPrincipal>()
+    return principal?.getClaim(JwtConstant.CLAIM_USER_ID.value, Long::class)
 }
 
 @Serializable
