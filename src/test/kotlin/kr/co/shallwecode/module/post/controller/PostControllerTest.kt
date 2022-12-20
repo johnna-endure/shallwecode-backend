@@ -110,6 +110,79 @@ class PostControllerTest {
         assertEquals(expectedPostId, response.body())
     }
 
+    @Test
+    fun post_modify_failed() = testApplication {
+        // given
+        initDependency(this) {
+            bind(overrides = true) { singleton { postService } }
+        }
+        val client = createClient(this)
+
+        environment {
+            config = ApplicationConfig("application-test.conf")
+        }
+
+        // when
+        coEvery { postService.modify(any(), any(), any()) } throws RuntimeException("test exception")
+
+        //then
+        val validToken = JWT.create()
+            .withIssuer(JWT_ISSUER.value)
+            .withClaim("userId", 1L)
+            .withExpiresAt(Date(System.currentTimeMillis() + JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(JWT_SECRET.value))
+
+        val response = client.post("/post") {
+            contentType(ContentType.Application.Json)
+            bearerAuth(validToken)
+            setBody(
+                PostSaveRequest(
+                    title = "hello",
+                    content = "world"
+                )
+            )
+        }
+
+        assertEquals(HttpStatusCode.InternalServerError, response.status)
+    }
+
+    @Test
+    fun post_modify_success() = testApplication {
+        // given
+        initDependency(this) {
+            bind(overrides = true) { singleton { postService } }
+        }
+        val client = createClient(this)
+
+        environment {
+            config = ApplicationConfig("application-test.conf")
+        }
+
+        // when
+        coEvery { postService.modify(any(), any(), any()) } returns Unit
+
+        //then
+        val validToken = JWT.create()
+            .withIssuer(JWT_ISSUER.value)
+            .withClaim("userId", 1L)
+            .withExpiresAt(Date(System.currentTimeMillis() + JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(JWT_SECRET.value))
+
+        val response = client.put("/posts/1") {
+            contentType(ContentType.Application.Json)
+            bearerAuth(validToken)
+            setBody(
+                PostSaveRequest(
+                    title = "hello",
+                    content = "world"
+                )
+            )
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+
     private fun initDependency(applicationTestBuilder: ApplicationTestBuilder, mocks: DI.MainBuilder.() -> Unit) {
         applicationTestBuilder.application {
             di {
