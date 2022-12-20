@@ -27,7 +27,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class PostControllerTest {
+class PostControllerUnitTest {
     private lateinit var postService: PostService
 
     @BeforeTest

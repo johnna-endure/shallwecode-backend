@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 
-class UserControllerTest {
+class UserControllerUnitTest {
     private lateinit var userService: UserService
 
     @BeforeTest
