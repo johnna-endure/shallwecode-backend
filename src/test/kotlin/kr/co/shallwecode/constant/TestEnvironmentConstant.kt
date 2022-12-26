@@ -1,7 +1,7 @@
 package kr.co.shallwecode.constant
 
 enum class TestEnvironmentConstant(val value: String) {
-    JWT_ISSUER("test_issuer"),
-    JWT_SECRET("test_secret"),
-    JWT_EXP("68400")
+    TEST_JWT_ISSUER("test_issuer"),
+    TEST_JWT_SECRET("test_secret"),
+    TEST_JWT_EXP("68400")
 }

@@ -35,6 +35,7 @@ class PostControllerUnitTest {
         postService = mockk()
     }
 
+    // TODO 테스트 초기화 로직 중복 제거 필요
     @Test
     fun post_create_failed() = testApplication {
         // given
@@ -52,10 +53,10 @@ class PostControllerUnitTest {
 
         //then
         val validToken = JWT.create()
-            .withIssuer(JWT_ISSUER.value)
+            .withIssuer(TEST_JWT_ISSUER.value)
             .withClaim("userId", 1L)
-            .withExpiresAt(Date(System.currentTimeMillis() + JWT_EXP.value.toLong()))
-            .sign(Algorithm.HMAC256(JWT_SECRET.value))
+            .withExpiresAt(Date(System.currentTimeMillis() + TEST_JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(TEST_JWT_SECRET.value))
 
         val response = client.post("/post") {
             contentType(ContentType.Application.Json)
@@ -90,10 +91,10 @@ class PostControllerUnitTest {
 
         //then
         val validToken = JWT.create()
-            .withIssuer(JWT_ISSUER.value)
+            .withIssuer(TEST_JWT_ISSUER.value)
             .withClaim("userId", 1L)
-            .withExpiresAt(Date(System.currentTimeMillis() + JWT_EXP.value.toLong()))
-            .sign(Algorithm.HMAC256(JWT_SECRET.value))
+            .withExpiresAt(Date(System.currentTimeMillis() + TEST_JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(TEST_JWT_SECRET.value))
 
         val response = client.post("/post") {
             contentType(ContentType.Application.Json)
@@ -127,10 +128,10 @@ class PostControllerUnitTest {
 
         //then
         val validToken = JWT.create()
-            .withIssuer(JWT_ISSUER.value)
+            .withIssuer(TEST_JWT_ISSUER.value)
             .withClaim("userId", 1L)
-            .withExpiresAt(Date(System.currentTimeMillis() + JWT_EXP.value.toLong()))
-            .sign(Algorithm.HMAC256(JWT_SECRET.value))
+            .withExpiresAt(Date(System.currentTimeMillis() + TEST_JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(TEST_JWT_SECRET.value))
 
         val response = client.post("/post") {
             contentType(ContentType.Application.Json)
@@ -163,10 +164,10 @@ class PostControllerUnitTest {
 
         //then
         val validToken = JWT.create()
-            .withIssuer(JWT_ISSUER.value)
+            .withIssuer(TEST_JWT_ISSUER.value)
             .withClaim("userId", 1L)
-            .withExpiresAt(Date(System.currentTimeMillis() + JWT_EXP.value.toLong()))
-            .sign(Algorithm.HMAC256(JWT_SECRET.value))
+            .withExpiresAt(Date(System.currentTimeMillis() + TEST_JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(TEST_JWT_SECRET.value))
 
         val response = client.put("/posts/1") {
             contentType(ContentType.Application.Json)
@@ -182,6 +183,92 @@ class PostControllerUnitTest {
         assertEquals(HttpStatusCode.OK, response.status)
     }
 
+    @Test
+    fun delete_post_failed_token_is_not_valid() = testApplication {
+        // given
+        initDependency(this) {
+            bind(overrides = true) { singleton { postService } }
+        }
+        val client = createClient(this)
+
+        environment {
+            config = ApplicationConfig("application-test.conf")
+        }
+
+        // when
+        coEvery { postService.softDelete(any(), any()) } returns Unit
+
+        //then
+        val validToken = JWT.create()
+            .withIssuer("wrong")
+            .withClaim("userId", 1L)
+            .withExpiresAt(Date(System.currentTimeMillis() + TEST_JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(TEST_JWT_SECRET.value))
+
+        val response = client.delete("/posts/1") {
+            bearerAuth(validToken)
+        }
+
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
+    @Test
+    fun delete_post_failed_internal_error() = testApplication {
+        // given
+        initDependency(this) {
+            bind(overrides = true) { singleton { postService } }
+        }
+        val client = createClient(this)
+
+        environment {
+            config = ApplicationConfig("application-test.conf")
+        }
+
+        // when
+        coEvery { postService.softDelete(any(), any()) } throws RuntimeException()
+
+        //then
+        val validToken = JWT.create()
+            .withIssuer(TEST_JWT_ISSUER.value)
+            .withClaim("userId", 1L)
+            .withExpiresAt(Date(System.currentTimeMillis() + TEST_JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(TEST_JWT_SECRET.value))
+
+        val response = client.delete("/posts/1") {
+            bearerAuth(validToken)
+        }
+
+        assertEquals(HttpStatusCode.InternalServerError, response.status)
+    }
+
+    @Test
+    fun delete_post_success() = testApplication {
+        // given
+        initDependency(this) {
+            bind(overrides = true) { singleton { postService } }
+        }
+        val client = createClient(this)
+
+        environment {
+            config = ApplicationConfig("application-test.conf")
+        }
+
+        // when
+        coEvery { postService.softDelete(any(), any()) } returns Unit
+
+        //then
+        val validToken = JWT.create()
+            .withIssuer(TEST_JWT_ISSUER.value)
+            .withClaim("userId", 1L)
+            .withExpiresAt(Date(System.currentTimeMillis() + TEST_JWT_EXP.value.toLong()))
+            .sign(Algorithm.HMAC256(TEST_JWT_SECRET.value))
+
+        val response = client.delete("/posts/1") {
+            bearerAuth(validToken)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
 
     private fun initDependency(applicationTestBuilder: ApplicationTestBuilder, mocks: DI.MainBuilder.() -> Unit) {
         applicationTestBuilder.application {

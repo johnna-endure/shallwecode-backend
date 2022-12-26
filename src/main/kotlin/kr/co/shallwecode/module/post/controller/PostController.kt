@@ -49,7 +49,7 @@ class PostController(application: Application) : AbstractDIController(applicatio
                 }
             }
 
-            route("/posts/{postId}", HttpMethod.Put) {
+            route("/posts/{postId}") {
                 put {
                     val postId =
                         call.parameters["postId"]?.toLong() ?: return@put call.respond(HttpStatusCode.BadRequest)
@@ -77,7 +77,13 @@ class PostController(application: Application) : AbstractDIController(applicatio
                         ExceptionMessage.EMPTY_USER_ID_IN_TOKEN
                     )
 
-                    postService.softDelete(postId, userId)
+                    try {
+                        postService.softDelete(postId, userId)
+                    } catch (ex: Exception) {
+                        logger.error("post delete failed : ${ex.stackTraceToString()}")
+                        call.respond(HttpStatusCode.InternalServerError)
+                        return@delete
+                    }
                     call.respond(HttpStatusCode.OK)
                 }
             }
