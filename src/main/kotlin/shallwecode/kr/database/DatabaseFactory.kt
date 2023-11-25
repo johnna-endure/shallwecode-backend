@@ -1,9 +1,12 @@
 package shallwecode.kr.database
 
-import io.ktor.server.application.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.transaction
+import shallwecode.kr.auth.data.LoginHistory
+import shallwecode.kr.auth.data.OAuthGithubPrincipal
 
 
 object DatabaseFactory {
@@ -24,14 +27,14 @@ object DatabaseFactory {
         )
 
         // 테이블 생성을 원할 경우
-//        transaction(db) {
-        // create table
-//            SchemaUtils.create(테이블)
-//        }
+        transaction(database) {
+//         create table
+            SchemaUtils.create(LoginHistory, OAuthGithubPrincipal)
+        }
     }
 
-    suspend fun <T> dbQuery(block: suspend () -> T): T =
+    suspend fun <T> transactionQuery(block: suspend () -> T): T =
         newSuspendedTransaction(db = database, context = Dispatchers.IO) { block() }
-
+    
 }
 

@@ -1,4 +1,4 @@
-package shallwecode.kr.auth.table
+package shallwecode.kr.auth.data
 
 import io.ktor.utils.io.errors.*
 import kotlinx.serialization.Contextual
@@ -12,19 +12,17 @@ import java.time.LocalDateTime
 
 object LoginHistory : Table() {
     val id = long("id").autoIncrement()
-    val authType = varchar("auth_type", length = 10).default("password")
+    val authType = varchar("auth_type", length = 10).default("PASSWORD")
     val oauthGithubPrincipalId = long("oauth_github_principal_id").nullable()
     val created = datetime("created").default(LocalDateTime.now())
 
     override val primaryKey = PrimaryKey(id) // name is optional here
-
-    suspend fun LoginHistory.create(authTypeParam: AuthType, oauthId: Long?): Long {
-        return DatabaseFactory.dbQuery {
-            insert {
-                it[authType] = authTypeParam.name
-                it[oauthGithubPrincipalId] = oauthId
-            }.resultedValues?.singleOrNull()?.let { it[id] } ?: throw IOException("create failed")
-        }
+    override val tableName: String = "login_history"
+    fun save(authTypeParam: AuthType, oauthId: Long?): Long {
+        return insert {
+            it[authType] = authTypeParam.name
+            it[oauthGithubPrincipalId] = oauthId
+        }.resultedValues?.singleOrNull()?.let { it[id] } ?: throw IOException("create failed")
     }
 }
 
@@ -33,7 +31,7 @@ data class LoginHistoryModel(
     val id: Long,
     val authType: AuthType,
     val oauthGithubPrincipalId: Long?,
-    @Contextual // Serializer 구현 필요
+    @Contextual
     val created: LocalDateTime
 )
 
