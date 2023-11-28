@@ -5,8 +5,8 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import shallwecode.kr.auth.data.LoginHistory
-import shallwecode.kr.auth.data.OAuthGithubPrincipal
+import shallwecode.kr.auth.data.LoginHistoryTable
+import shallwecode.kr.auth.data.OAuthGithubPrincipalTable
 
 
 object DatabaseFactory {
@@ -29,12 +29,12 @@ object DatabaseFactory {
         // 테이블 생성을 원할 경우
         transaction(database) {
 //         create table
-            SchemaUtils.create(LoginHistory, OAuthGithubPrincipal)
+            SchemaUtils.create(LoginHistoryTable, OAuthGithubPrincipalTable)
         }
     }
 
     suspend fun <T> transactionQuery(block: suspend () -> T): T =
         newSuspendedTransaction(db = database, context = Dispatchers.IO) { block() }
-    
+
 }
 

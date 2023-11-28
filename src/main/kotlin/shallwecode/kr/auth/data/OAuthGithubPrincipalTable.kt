@@ -5,11 +5,10 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.datetime
-import shallwecode.kr.database.DatabaseFactory
 import java.time.LocalDateTime
 
 
-object OAuthGithubPrincipal : Table() {
+object OAuthGithubPrincipalTable : Table() {
     val id = long("id").autoIncrement()
     val state = varchar("state", 100).nullable()
     val accessToken = varchar("access_token", 100)
@@ -38,7 +37,7 @@ object OAuthGithubPrincipal : Table() {
         } ?: throw IOException("crated failed.")
     }
 
-    fun OAuthGithubPrincipal.resultRowToModel(resultRow: ResultRow): OAuthGithubPrincipalModel {
+    fun OAuthGithubPrincipalTable.resultRowToModel(resultRow: ResultRow): OAuthGithubPrincipalModel {
         return OAuthGithubPrincipalModel(
             id = resultRow[id],
             state = resultRow[state],

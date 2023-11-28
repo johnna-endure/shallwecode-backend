@@ -6,11 +6,10 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.datetime
-import shallwecode.kr.database.DatabaseFactory
 import java.time.LocalDateTime
 
 
-object LoginHistory : Table() {
+object LoginHistoryTable : Table() {
     val id = long("id").autoIncrement()
     val authType = varchar("auth_type", length = 10).default("PASSWORD")
     val oauthGithubPrincipalId = long("oauth_github_principal_id").nullable()
