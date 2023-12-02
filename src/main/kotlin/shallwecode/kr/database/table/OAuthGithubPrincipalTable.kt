@@ -8,7 +8,7 @@ import java.lang.RuntimeException
 import java.time.LocalDateTime
 
 
-object OAuthGithubPrincipalTable : Table() {
+object OAuthGithubPrincipalTable : Table("oauth_github_principal") {
     val id = long("id").autoIncrement()
     val state = varchar("state", 100).nullable()
     val accessToken = varchar("access_token", 100)
@@ -17,7 +17,6 @@ object OAuthGithubPrincipalTable : Table() {
     val created = datetime("created").default(LocalDateTime.now())
 
     override val primaryKey: PrimaryKey? = PrimaryKey(id)
-    override val tableName: String = "oauth_github_principal"
 
     fun save(
         stateParam: String?,

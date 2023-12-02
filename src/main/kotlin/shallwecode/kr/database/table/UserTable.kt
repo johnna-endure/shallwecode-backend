@@ -2,6 +2,7 @@ package shallwecode.kr.database.table
 
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.Table.Dual.nullable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.datetime
 import java.time.LocalDateTime
@@ -9,18 +10,17 @@ import java.time.LocalDateTime
 /**
  * 사용자 마스터 테이블
  */
-object UserTable : Table() {
+object UserTable : Table("user") {
+
     val id = long("id").autoIncrement()
-    val email = varchar("email", 100).uniqueIndex("user_email_uindex")
+    val email = varchar("email", 100).uniqueIndex()
     val name = varchar("name", 50)
-    val githubUserId =
-        long("github_user_id").references(ref = GithubUserTable.id, fkName = "user_github_user_id_fk").nullable()
+    val githubUserId = long("github_user_id").references(GithubUserTable.id).nullable()
     val deleted = bool("deleted").default(false)
     val created = datetime("created").default(LocalDateTime.now())
     val updated = datetime("updated").default(LocalDateTime.now())
 
     override val primaryKey = PrimaryKey(id)
-    override val tableName = "user"
     fun save(
         emailParam: String,
         nameParam: String,

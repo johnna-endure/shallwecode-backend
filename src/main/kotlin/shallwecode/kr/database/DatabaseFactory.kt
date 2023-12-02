@@ -32,7 +32,7 @@ object DatabaseFactory {
         transaction(database) {
 //         create table
 //            SchemaUtils.drop(LoginHistoryTable, OAuthGithubPrincipalTable)
-//            SchemaUtils.create(LoginHistoryTable, OAuthGithubPrincipalTable, GithubUserTable, UserTable)
+            SchemaUtils.create(UserTable)
         }
     }
 

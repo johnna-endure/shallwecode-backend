@@ -11,7 +11,7 @@ import java.time.LocalDateTime
  * 사용자 깃허브 정보
  * 깃허브에서 제공하는 user response 스키마
  */
-object GithubUserTable : Table() {
+object GithubUserTable : Table("github_user") {
     val id = long("id")
     val login = varchar("login", 100)
     val avatarUrl = varchar("avatar_url", 200)
@@ -33,7 +33,6 @@ object GithubUserTable : Table() {
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
 
     override val primaryKey = PrimaryKey(id)
-    override val tableName = "github_user"
 
     fun save(userInfo: GithubUserModel): GithubUserModel? {
         return insert {

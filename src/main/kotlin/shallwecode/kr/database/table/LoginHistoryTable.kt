@@ -8,14 +8,13 @@ import org.jetbrains.exposed.sql.javatime.datetime
 import java.time.LocalDateTime
 
 
-object LoginHistoryTable : Table() {
+object LoginHistoryTable : Table("login_history") {
     val id = long("id").autoIncrement()
     val authType = varchar("auth_type", length = 10).default("PASSWORD")
     val oauthGithubPrincipalId = long("oauth_github_principal_id").nullable()
     val created = datetime("created").default(LocalDateTime.now())
 
     override val primaryKey = PrimaryKey(id) // name is optional here
-    override val tableName: String = "login_history"
     fun save(authTypeParam: AuthType, oauthId: Long?): Long {
         return insert {
             it[authType] = authTypeParam.name

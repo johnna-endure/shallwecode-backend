@@ -9,14 +9,14 @@ import shallwecode.kr.auth.util.RedirectURLMap
 import shallwecode.kr.common.API_CLIENT
 
 
-fun Application.oauth2GithubRoute() {
+fun Application.oauth2Github() {
+    val redirectURLMap = RedirectURLMap()
     val secret = environment.config.property("oauth.github.secret").getString()
     val clientId = environment.config.property("oauth.github.clientId").getString()
-    val redirectURLMap = RedirectURLMap()
-//    val authService = AuthService(OAuthGithubPrincipal, LoginHistory)
+    val authService = AuthService(this)
 
     authentication {
-        oauth("oauth-github") {
+        oauth(AuthTypeName.OAUTH_GITHUB.name) {
             urlProvider = { "http://localhost:8080/authorized/github" }
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
@@ -39,22 +39,20 @@ fun Application.oauth2GithubRoute() {
 
 
     routing {
-        authenticate("oauth-github") {
+        authenticate(AuthTypeName.OAUTH_GITHUB.name) {
             get("/login/github") { }
             get("/authorized/github") {
                 val principal = call.principal<OAuthAccessTokenResponse.OAuth2>() ?: return@get call.respond(
                     HttpStatusCode.Unauthorized,
                     "empty principal"
                 )
-                AuthService.githubLogin(principal, redirectURLMap)
+                val token = authService.githubLogin(principal, redirectURLMap)
 
-
-                // TODO 토큰 생성 후 반환
+                println("token : $token")
 
 
                 call.respondRedirect("http://localhost:5173/authorized")
             }
         }
     }
-
 }

@@ -1,5 +1,8 @@
 package shallwecode.kr.auth
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import shallwecode.kr.auth.util.RedirectURLMap
 import shallwecode.kr.database.table.AuthType
@@ -9,8 +12,14 @@ import shallwecode.kr.database.DatabaseFactory
 import shallwecode.kr.github.api.GitHubUserApis
 import shallwecode.kr.database.table.GithubUserTable
 import shallwecode.kr.database.table.UserTable
+import java.util.*
 
-object AuthService {
+class AuthService(
+    application: Application
+) {
+    val secret = application.environment.config.property("jwt.secret").getString()
+    val issuer = application.environment.config.property("jwt.issuer").getString()
+    val expire = application.environment.config.property("jwt.expire").getString().toInt()
 
     /**
      * 로그인 정보, 로그인 내역을 저장하고 적합한 사용자일 경우 토큰 발급
@@ -42,8 +51,10 @@ object AuthService {
             }
 
             // 토큰 반환
-
-            ""
+            JWT.create()
+                .withIssuer(issuer)
+                .withExpiresAt(Date(System.currentTimeMillis() + expire))
+                .sign(Algorithm.HMAC256(secret))
         }
     }
 }
