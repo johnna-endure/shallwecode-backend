@@ -1,10 +1,10 @@
-package shallwecode.kr.auth.data
+package shallwecode.kr.database.table
 
-import io.ktor.utils.io.errors.*
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.datetime
+import java.lang.RuntimeException
 import java.time.LocalDateTime
 
 
@@ -34,7 +34,7 @@ object OAuthGithubPrincipalTable : Table() {
 
         return statement.resultedValues?.singleOrNull()?.let {
             it[id]
-        } ?: throw IOException("crated failed.")
+        } ?: throw RuntimeException("crated failed.")
     }
 
     fun OAuthGithubPrincipalTable.resultRowToModel(resultRow: ResultRow): OAuthGithubPrincipalModel {

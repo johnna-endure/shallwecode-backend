@@ -1,6 +1,5 @@
-package shallwecode.kr.auth.data
+package shallwecode.kr.database.table
 
-import io.ktor.utils.io.errors.*
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
@@ -21,7 +20,7 @@ object LoginHistoryTable : Table() {
         return insert {
             it[authType] = authTypeParam.name
             it[oauthGithubPrincipalId] = oauthId
-        }.resultedValues?.singleOrNull()?.let { it[id] } ?: throw IOException("create failed")
+        }.resultedValues?.singleOrNull()?.let { it[id] } ?: throw RuntimeException("create failed")
     }
 }
 

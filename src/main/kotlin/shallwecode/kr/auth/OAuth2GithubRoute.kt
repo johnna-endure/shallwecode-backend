@@ -1,13 +1,12 @@
-package shallwecode.kr.auth.route
+package shallwecode.kr.auth
 
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import shallwecode.kr.auth.RedirectURLMap
-import shallwecode.kr.auth.service.AuthService
-import shallwecode.kr.client.HTTP_CLIENT
+import shallwecode.kr.auth.util.RedirectURLMap
+import shallwecode.kr.common.API_CLIENT
 
 
 fun Application.oauth2GithubRoute() {
@@ -29,12 +28,12 @@ fun Application.oauth2GithubRoute() {
                     clientSecret = secret,
 //                    defaultScopes = listOf("https://www.googleapis.com/auth/userinfo.profile")
                     onStateCreated = { call, state ->
-                        println("created state : ${state}")
+//                        println("created state : ${state}")
                         redirectURLMap.save(state, call.request.queryParameters["redirectUrl"])
                     }
                 )
             }
-            client = HTTP_CLIENT
+            client = API_CLIENT
         }
     }
 
@@ -50,7 +49,8 @@ fun Application.oauth2GithubRoute() {
                 AuthService.githubLogin(principal, redirectURLMap)
 
 
-                // 토큰 생성 후 반환
+                // TODO 토큰 생성 후 반환
+
 
                 call.respondRedirect("http://localhost:5173/authorized")
             }

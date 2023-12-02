@@ -1,25 +1,23 @@
-package shallwecode.kr.plugins
+package shallwecode.kr.common
 
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
-import shallwecode.kr.common.LocalDateSerializer
-import shallwecode.kr.common.LocalDateTimeSerializer
 
-fun Application.configureSerialization() {
+val API_CLIENT = HttpClient(CIO) {
     install(ContentNegotiation) {
         json(Json {
             ignoreUnknownKeys = true
+            encodeDefaults = true
             prettyPrint = true
             serializersModule = SerializersModule {
                 contextual(LocalDateSerializer)
                 contextual(LocalDateTimeSerializer)
             }
         })
-
     }
 }
-

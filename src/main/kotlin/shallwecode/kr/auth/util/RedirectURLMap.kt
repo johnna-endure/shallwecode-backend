@@ -1,4 +1,4 @@
-package shallwecode.kr.auth
+package shallwecode.kr.auth.util
 
 import java.util.concurrent.ConcurrentHashMap
 

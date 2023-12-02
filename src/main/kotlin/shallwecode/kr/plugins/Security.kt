@@ -1,7 +1,7 @@
 package shallwecode.kr.plugins
 
 import io.ktor.server.application.*
-import shallwecode.kr.auth.route.oauth2GithubRoute
+import shallwecode.kr.auth.oauth2GithubRoute
 
 fun Application.configureSecurity() {
     // Please read the jwt property from the config file if you are using EngineMain

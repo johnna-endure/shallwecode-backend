@@ -5,8 +5,10 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import shallwecode.kr.auth.data.LoginHistoryTable
-import shallwecode.kr.auth.data.OAuthGithubPrincipalTable
+import shallwecode.kr.database.table.GithubUserTable
+import shallwecode.kr.database.table.LoginHistoryTable
+import shallwecode.kr.database.table.OAuthGithubPrincipalTable
+import shallwecode.kr.database.table.UserTable
 
 
 object DatabaseFactory {
@@ -29,7 +31,8 @@ object DatabaseFactory {
         // 테이블 생성을 원할 경우
         transaction(database) {
 //         create table
-            SchemaUtils.create(LoginHistoryTable, OAuthGithubPrincipalTable)
+//            SchemaUtils.drop(LoginHistoryTable, OAuthGithubPrincipalTable)
+//            SchemaUtils.create(LoginHistoryTable, OAuthGithubPrincipalTable, GithubUserTable, UserTable)
         }
     }
 
