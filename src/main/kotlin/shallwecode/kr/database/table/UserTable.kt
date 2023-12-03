@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Table.Dual.nullable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.select
 import java.time.LocalDateTime
 
 /**
@@ -32,6 +33,10 @@ object UserTable : Table("user") {
             it[githubUserId] = githubUserIdParam
             it[deleted] = false
         }.resultedValues?.singleOrNull()?.let { rowToModel(it) } ?: throw RuntimeException("create failed.")
+    }
+
+    fun findByGithubUserId(githubUserIdParam: Long): UserModel? {
+        return UserTable.select { githubUserId eq githubUserIdParam }.singleOrNull()?.let { rowToModel(it) }
     }
 
     private fun rowToModel(row: ResultRow): UserModel {

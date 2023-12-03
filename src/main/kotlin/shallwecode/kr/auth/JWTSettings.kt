@@ -24,9 +24,10 @@ fun Application.jwt() {
             challenge { _, _ ->
                 call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
             }
-//            validate { credential ->
-//                if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
-//            }
+            validate { credential ->
+                // validate 필요?
+                JWTPrincipal(credential.payload)
+            }
         }
     }
 }
