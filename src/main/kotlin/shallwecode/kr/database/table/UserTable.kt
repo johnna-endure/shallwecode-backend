@@ -1,11 +1,8 @@
 package shallwecode.kr.database.table
 
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.Table.Dual.nullable
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.select
 import java.time.LocalDateTime
 
 /**
@@ -37,6 +34,23 @@ object UserTable : Table("user") {
 
     fun findByGithubUserId(githubUserIdParam: Long): UserModel? {
         return UserTable.select { githubUserId eq githubUserIdParam }.singleOrNull()?.let { rowToModel(it) }
+    }
+
+    /*
+    select l.id from "user" u join login_history l on u.id = l.user_id where u.id = 2 order by l.id desc limit 1
+     */
+    fun findGithubLatestAccessToken(idParam: Long): String? {
+        return UserTable.join(LoginHistoryTable, JoinType.INNER, id, LoginHistoryTable.userId)
+            .join(
+                OAuthGithubPrincipalTable,
+                JoinType.INNER,
+                LoginHistoryTable.oauthGithubPrincipalId,
+                OAuthGithubPrincipalTable.id
+            ).slice(OAuthGithubPrincipalTable.accessToken)
+            .select { id eq idParam }
+            .orderBy(LoginHistoryTable.id to SortOrder.DESC)
+            .limit(1)
+            .singleOrNull()?.let { it[OAuthGithubPrincipalTable.accessToken] }
     }
 
     private fun rowToModel(row: ResultRow): UserModel {

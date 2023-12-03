@@ -5,8 +5,11 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.date.*
 import shallwecode.kr.auth.util.RedirectURLMap
 import shallwecode.kr.common.API_CLIENT
+import java.time.Instant
+import java.time.LocalDateTime
 
 
 fun Application.oauth2Github() {
@@ -17,7 +20,7 @@ fun Application.oauth2Github() {
     val authService = AuthService(this)
 
     authentication {
-        oauth(AuthTypeName.OAUTH_GITHUB.name) {
+        oauth(AuthenticateName.OAUTH_GITHUB.name) {
             urlProvider = { "http://localhost:8080/authorized/github" }
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
@@ -40,7 +43,7 @@ fun Application.oauth2Github() {
 
 
     routing {
-        authenticate(AuthTypeName.OAUTH_GITHUB.name) {
+        authenticate(AuthenticateName.OAUTH_GITHUB.name) {
             get("/login/github") { }
             get("/authorized/github") {
                 val principal = call.principal<OAuthAccessTokenResponse.OAuth2>() ?: return@get call.respond(
@@ -54,7 +57,7 @@ fun Application.oauth2Github() {
                         domain = cookieDomain,
                         name = "SWC_LOGIN_TOKEN",
                         value = loginToken,
-                        httpOnly = true,
+                        httpOnly = false,
                         path = "/",
                         secure = false,
                         maxAge = 3600 * 6 // 6시간

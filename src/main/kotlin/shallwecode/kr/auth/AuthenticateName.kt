@@ -1,6 +1,6 @@
 package shallwecode.kr.auth
 
-enum class AuthTypeName {
+enum class AuthenticateName {
     OAUTH_GITHUB,
     JWT
 }

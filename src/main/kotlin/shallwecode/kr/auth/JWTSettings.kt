@@ -7,14 +7,13 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
-import java.util.*
 
 fun Application.jwt() {
     val secret = environment.config.property("jwt.secret").getString()
     val issuer = environment.config.property("jwt.issuer").getString()
 
     authentication {
-        jwt(AuthTypeName.JWT.name) {
+        jwt(AuthenticateName.JWT.name) {
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(secret))

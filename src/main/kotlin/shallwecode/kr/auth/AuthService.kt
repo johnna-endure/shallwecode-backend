@@ -5,7 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import shallwecode.kr.auth.util.RedirectURLMap
-import shallwecode.kr.database.table.AuthType
+import shallwecode.kr.database.table.LoginAuthType
 import shallwecode.kr.database.table.LoginHistoryTable
 import shallwecode.kr.database.table.OAuthGithubPrincipalTable
 import shallwecode.kr.database.DatabaseFactory
@@ -30,15 +30,13 @@ class AuthService(
         redirectURLMap: RedirectURLMap
     ): String {
         return DatabaseFactory.transactionQuery {
-            // 인증정보 저장
+            // 깃허브 인증정보 저장
             val principalId = OAuthGithubPrincipalTable.save(
                 stateParam = principal.state!!,
                 accessTokenParam = principal.accessToken,
                 scopeParam = principal.extraParameters?.get("scope"),
                 redirectUriParam = redirectURLMap.getAndRemove(principal.state!!)
             )
-            // 이력 저장
-            LoginHistoryTable.save(AuthType.GITHUB, principalId)
 
             // 액세스 토큰으로 깃허브 사용자 정보 조회하기
             val githubUserInfo = GitHubUserApis.getAuthenticatedUser(principal.accessToken)
@@ -57,6 +55,10 @@ class AuthService(
             val userId =
                 UserTable.findByGithubUserId(githubUserInfo.id)?.let { it.id }
                     ?: throw NoSuchElementException("not founf user.")
+
+            // 로그인 이력 저장
+            LoginHistoryTable.save(userId, LoginAuthType.GITHUB, principalId)
+
             // 토큰 반환
             JWT.create()
                 .withIssuer(issuer)

@@ -6,7 +6,7 @@ import io.ktor.server.plugins.cors.routing.*
 
 fun Application.configureHTTP() {
     install(CORS) {
-        allowHost("localhost")
+        allowHost("localhost:5173")
 //        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Put)
