@@ -20,7 +20,7 @@ object GithubUserTable : Table("github_user") {
     val company = varchar("company", 50).nullable()
     val blog = varchar("blog", 100).nullable()
     val location = varchar("location", 100).nullable()
-    val email = varchar("email", 100)
+    val email = varchar("email", 100).nullable()
     val publicRepos = integer("public_repos").default(0)
     val publicGists = integer("public_gists").default(0)
     val privateGists = integer("private_gists").default(0)
@@ -110,7 +110,7 @@ data class GithubUserModel(
     val company: String? = null,
     val blog: String? = null,
     val location: String? = null,
-    val email: String,
+    val email: String? = null,
     @SerialName("public_repos")
     val publicRepos: Int,
     @SerialName("public_gists")

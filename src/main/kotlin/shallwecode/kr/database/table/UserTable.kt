@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 object UserTable : Table("user") {
 
     val id = long("id").autoIncrement()
-    val email = varchar("email", 100).uniqueIndex()
+    val email = varchar("email", 100).nullable().uniqueIndex()
     val name = varchar("name", 50)
     val githubUserId = long("github_user_id").references(GithubUserTable.id).nullable()
     val deleted = bool("deleted").default(false)
@@ -20,7 +20,7 @@ object UserTable : Table("user") {
 
     override val primaryKey = PrimaryKey(id)
     fun save(
-        emailParam: String,
+        emailParam: String?,
         nameParam: String,
         githubUserIdParam: Long?
     ): UserModel? {
@@ -68,7 +68,7 @@ object UserTable : Table("user") {
 
 data class UserModel(
     val id: Long,
-    val email: String,
+    val email: String?,
     val name: String,
     val githubUserId: Long?,
     val deleted: Boolean,

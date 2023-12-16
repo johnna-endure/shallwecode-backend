@@ -9,4 +9,12 @@ class UserService {
             UserTable.findGithubLatestAccessToken(userId) ?: throw RuntimeException("not found accessToken")
         }
     }
+
+    suspend fun updateGithubUserRepositories() {
+
+    }
+
+    suspend fun getGithubUserRepositories() {
+        
+    }
 }

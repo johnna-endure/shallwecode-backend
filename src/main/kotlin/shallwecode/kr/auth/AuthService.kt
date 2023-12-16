@@ -12,6 +12,9 @@ import shallwecode.kr.database.DatabaseFactory
 import shallwecode.kr.github.api.GitHubUserApis
 import shallwecode.kr.database.table.GithubUserTable
 import shallwecode.kr.database.table.UserTable
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 
 class AuthService(
@@ -58,12 +61,12 @@ class AuthService(
 
             // 로그인 이력 저장
             LoginHistoryTable.save(userId, LoginAuthType.GITHUB, principalId)
-
             // 토큰 반환
             JWT.create()
                 .withIssuer(issuer)
                 .withClaim("userId", userId)
-                .withExpiresAt(Date(System.currentTimeMillis() + expire))
+                .withExpiresAt(Date.from(LocalDateTime.now().plusYears(1).toInstant(ZoneOffset.UTC)))
+//                .withExpiresAt(Date(System.currentTimeMillis() + expire))
                 .sign(Algorithm.HMAC256(secret))
         }
     }

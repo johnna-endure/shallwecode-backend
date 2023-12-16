@@ -19,8 +19,8 @@ fun Application.userGithubRoutes() {
                 val userId = principal?.payload?.getClaim("userId")?.asLong()
                     ?: return@get call.respond(HttpStatusCode.Unauthorized, "invalid login token");
                 val accessToken = userService.getLatestGithubAccessToken(userId)
-
-                GithubRepositoryApis.getRepositoriesForUser(accessToken)
+                val ret = GithubRepositoryApis.getRepositoriesForAuthenticatedUser(accessToken)
+                println("list : $ret")
             }
         }
     }
